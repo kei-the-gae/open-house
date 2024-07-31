@@ -5,9 +5,11 @@ const Listing = require('../models/listing');
 
 router.get('/', async (req, res) => {
     try {
-        const allListings = await Listing.find();
-        console.log(allListings);
-        res.render('listings/index.ejs');
+        const populatedListings = await Listing.find().populate('owner');
+        // console.log('Populated Listings:', populatedListings);
+        res.render('listings/index.ejs', {
+            listings: populatedListings,
+        });
     } catch (err) {
         console.log(err);
         res.redirect('/');
@@ -16,6 +18,17 @@ router.get('/', async (req, res) => {
 
 router.get('/new', async (req, res) => {
     res.render('listings/new.ejs');
+});
+
+router.post('/', async (req, res) => {
+    try {
+        req.body.owner = req.session.user._id;
+        await Listing.create(req.body);
+        res.redirect('/');
+    } catch (err) {
+        console.log(err);
+        res.redirect('/');
+    };
 });
 
 module.exports = router;
