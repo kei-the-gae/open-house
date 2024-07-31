@@ -70,4 +70,19 @@ router.get('/:listingId/edit', async (req, res) => {
     };
 });
 
+router.put('/:listingId', async (req, res) => {
+    try {
+        const currentListing = await Listing.findById(req.params.listingId);
+        if (currentListing.owner.equals(req.session.user._id)) {
+            await currentListing.updateOne(req.body);
+            res.redirect('/listings');
+        } else {
+            res.send('You don\'t have permission to do that.');
+        };
+    } catch (err) {
+        console.log(err);
+        res.redirect('/');
+    };
+});
+
 module.exports = router;
