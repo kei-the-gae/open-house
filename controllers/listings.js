@@ -34,8 +34,10 @@ router.post('/', async (req, res) => {
 router.get('/:listingId', async (req, res) => {
     try {
         const populatedListings = await Listing.findById(req.params.listingId).populate('owner');
+        const userHasFavorited = populatedListings.favoritedByUsers.some(user => user.equals(req.session.user._id));
         res.render('listings/show.ejs', {
             listing: populatedListings,
+            userHasFavorited,
         });
     } catch (err) {
         console.log(err);
@@ -87,13 +89,14 @@ router.put('/:listingId', async (req, res) => {
 
 router.post('/:listingId/favorited-by/:userId', async (req, res) => {
     try {
-        console.log('userId: ', req.params.userId);
-        console.log('lsitingId: ', req.params.listingId);
-        res.send(`request to favorite ${req.params.listingId}`);
+        await Listing.findByIdAndUpdate(req.params.listingId, {
+            $push: { favoritedByUsers: req.params.userId },
+        });
+        res.redirect(`/listings/${req.params.listingId}`);
     } catch (err) {
         console.log(err);
         res.redirect('/');
-    }
-})
+    };
+});
 
 module.exports = router;
