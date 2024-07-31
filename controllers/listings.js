@@ -54,8 +54,20 @@ router.delete('/:listingId', async (req, res) => {
         };
     } catch (err) {
         console.log(err);
-        redirect('/')
+        redirect('/');
     };
-})
+});
+
+router.get('/:listingId/edit', async (req, res) => {
+    try {
+        const currentListing = await Listing.findById(req.params.listingId);
+        res.render('listings/edit.ejs', {
+            listing: currentListing,
+        });
+    } catch (err) {
+        console.log(err);
+        res.redirect('/');
+    };
+});
 
 module.exports = router;
