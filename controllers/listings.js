@@ -85,4 +85,15 @@ router.put('/:listingId', async (req, res) => {
     };
 });
 
+router.post('/:listingId/favorited-by/:userId', async (req, res) => {
+    try {
+        console.log('userId: ', req.params.userId);
+        console.log('lsitingId: ', req.params.listingId);
+        res.send(`request to favorite ${req.params.listingId}`);
+    } catch (err) {
+        console.log(err);
+        res.redirect('/');
+    }
+})
+
 module.exports = router;
